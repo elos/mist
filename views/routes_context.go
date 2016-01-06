@@ -13,6 +13,10 @@ func (r *RoutesContext) Message() string {
 	return fmt.Sprintf("/message")
 }
 
+func (r *RoutesContext) Test() string {
+	return fmt.Sprintf("/test")
+}
+
 var routesContext = &RoutesContext{}
 
 type context struct {

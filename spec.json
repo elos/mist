@@ -15,6 +15,14 @@
 
      "endpoints": [
          {
+             "name": "test",
+             "path": "/test",
+             "actions": [ "GET" ],
+             "middleware": {
+                 "GET": [ "log", "cors" ]
+             }
+         },
+         {
              "name": "message",
              "path": "/message",
              "actions": [ "POST", "OPTIONS" ],

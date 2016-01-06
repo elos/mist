@@ -19,6 +19,28 @@ func init() {
 func router(m *Middleware, s *Services) serve.Router {
 	router := builtin.NewRouter()
 
+	router.GET(routes.Test, func(c *serve.Conn) {
+
+		if ok := m.Log.Inbound(c); !ok {
+			return
+		}
+
+		if ok := m.Cors.Inbound(c); !ok {
+			return
+		}
+
+		routes.TestGET(c)
+
+		if ok := m.Cors.Outbound(c); !ok {
+			return
+		}
+
+		if ok := m.Log.Outbound(c); !ok {
+			return
+		}
+
+	})
+
 	router.POST(routes.Message, func(c *serve.Conn) {
 
 		if ok := m.Log.Inbound(c); !ok {
