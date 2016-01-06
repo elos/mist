@@ -5,5 +5,5 @@ gen:
 	aeolus gen spec.json
 
 serve:
-	make ./cmd/serve/serve.go && ./cmd/serve/serve
+	go build ./cmd/serve/serve.go && ./cmd/serve/serve
 
