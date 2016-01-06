@@ -1,0 +1,31 @@
+{
+    "name": "mist",
+    "host": "mist.elos.com",
+    "port": 80,
+
+    "middleware": [
+        "log",
+        "cors"
+     ],
+
+     "services": [
+         "db",
+         "twilio"
+     ],
+
+     "endpoints": [
+         {
+             "name": "message",
+             "path": "/message",
+             "actions": [ "POST", "OPTIONS" ],
+             "middleware": {
+                 "POST": [ "log", "cors" ],
+                 "OPTIONS": [ "log", "cors" ]
+             },
+             "services": {
+                 "POST": [ "db", "twilio" ],
+                 "OPTIONS": []
+             }
+         }
+     ]
+}
