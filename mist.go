@@ -19,6 +19,8 @@ type Services struct {
 	services.DB
 
 	services.Twilio
+
+	services.Views
 }
 
 type Mist struct {
@@ -44,6 +46,10 @@ func New(m *Middleware, s *Services) *Mist {
 
 	if s.Twilio == nil {
 		log.Fatal("Service Twilio is nil")
+	}
+
+	if s.Views == nil {
+		log.Fatal("Service Views is nil")
 	}
 
 	return &Mist{

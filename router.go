@@ -51,7 +51,7 @@ func router(m *Middleware, s *Services) serve.Router {
 			return
 		}
 
-		routes.RegisterGET(c)
+		routes.RegisterGET(c, s.Views)
 
 		if ok := m.Cors.Outbound(c); !ok {
 			return

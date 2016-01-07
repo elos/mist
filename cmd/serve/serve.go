@@ -7,8 +7,10 @@ import (
 	"github.com/elos/autonomous"
 	emiddleware "github.com/elos/ehttp/middleware"
 	"github.com/elos/ehttp/serve"
+	"github.com/elos/ehttp/templates"
 	"github.com/elos/mist"
 	mistmiddleware "github.com/elos/mist/middleware"
+	"github.com/elos/mist/views"
 	"github.com/elos/models"
 	"github.com/subosito/twilio"
 )
@@ -55,7 +57,10 @@ func main() {
 	services := &mist.Services{
 		DB:     db,
 		Twilio: &TwilioService{client: c},
+		Views:  templates.NewEngine(views.TemplatesDir, &views.TemplatesSet),
 	}
+
+	services.Views.(*templates.Engine).Parse()
 
 	mist := mist.New(middleware, services)
 
