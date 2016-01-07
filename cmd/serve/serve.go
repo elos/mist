@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/elos/autonomous"
@@ -27,11 +28,17 @@ func (ts *TwilioService) Send(to, body string) (*twilio.Message, *twilio.Respons
 }
 
 func main() {
+	var (
+		mongo = flag.String("mongo", "localhost", "Address of mongo instance")
+	)
+
+	flag.Parse()
+
 	hub := autonomous.NewHub()
 	go hub.Start()
 	hub.WaitStart()
 
-	db, err := models.MongoDB("172.16.1.78:27017")
+	db, err := models.MongoDB(*mongo)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -23,6 +23,19 @@
              }
          },
          {
+             "name": "register",
+             "path": "/register",
+             "actions": [ "GET", "POST" ],
+             "middleware": {
+                 "GET": [ "log", "cors" ],
+                 "POST": [ "log", "cors" ]
+             },
+             "services": {
+                 "GET": [],
+                 "POST": [ "db" ]
+             }
+         },
+         {
              "name": "message",
              "path": "/message",
              "actions": [ "POST", "OPTIONS" ],
