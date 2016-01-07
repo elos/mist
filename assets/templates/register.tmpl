@@ -3,8 +3,14 @@
 {{define "Header"}} {{end}}
 
 {{define "Content"}}
-<form>
-    <input type="text" placeholder="First Name">
+<form action="/register" method="post">
+    Name:<br>
+    <input type="text" name="name">
+    <br>
+    Phone:<br>
+    <input type="tel" name="phone">
+    <br><br>
+    <input type="submit" value="LETS GO">
 </form>
 {{end}}
 
