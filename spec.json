@@ -11,7 +11,8 @@
      "services": [
          "db",
          "twilio",
-         "views"
+         "views",
+         "texts"
      ],
 
      "endpoints": [
@@ -45,7 +46,7 @@
                  "OPTIONS": [ "log", "cors" ]
              },
              "services": {
-                 "POST": [ "db", "twilio" ],
+                 "POST": [ "db", "twilio", "texts" ],
                  "OPTIONS": []
              }
          }

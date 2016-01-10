@@ -1,20 +1,10 @@
 package mist
 
 import (
-	"path/filepath"
-	"runtime"
-
 	"github.com/elos/ehttp/builtin"
 	"github.com/elos/ehttp/serve"
 	"github.com/elos/mist/routes"
 )
-
-var root string
-
-func init() {
-	_, filename, _, _ := runtime.Caller(1)
-	root = filepath.Dir(filename)
-}
 
 func router(m *Middleware, s *Services) serve.Router {
 	router := builtin.NewRouter()
@@ -95,7 +85,7 @@ func router(m *Middleware, s *Services) serve.Router {
 			return
 		}
 
-		routes.MessagePOST(c, s.DB, s.Twilio)
+		routes.MessagePOST(c, s.DB, s.Twilio, s.Texts)
 
 		if ok := m.Cors.Outbound(c); !ok {
 			return

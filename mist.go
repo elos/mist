@@ -18,6 +18,8 @@ type Middleware struct {
 type Services struct {
 	services.DB
 
+	services.Texts
+
 	services.Twilio
 
 	services.Views
@@ -42,6 +44,10 @@ func New(m *Middleware, s *Services) *Mist {
 
 	if s.DB == nil {
 		log.Fatal("Service DB is nil")
+	}
+
+	if s.Texts == nil {
+		log.Fatal("Service Texts is nil")
 	}
 
 	if s.Twilio == nil {

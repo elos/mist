@@ -10,6 +10,7 @@ import (
 	"github.com/elos/ehttp/templates"
 	"github.com/elos/mist"
 	mistmiddleware "github.com/elos/mist/middleware"
+	"github.com/elos/mist/services"
 	"github.com/elos/mist/views"
 	"github.com/elos/models"
 	"github.com/subosito/twilio"
@@ -52,12 +53,17 @@ func main() {
 
 	// Initialize twilio client
 	c := twilio.NewClient(AccountSid, AuthToken, nil)
+	twilio := &TwilioService{client: c}
+
+	sessions := services.NewTexts(twilio)
+	killSessions := sessions.Run(twilio)
 
 	// Setup Services
 	services := &mist.Services{
 		DB:     db,
-		Twilio: &TwilioService{client: c},
+		Twilio: twilio,
 		Views:  templates.NewEngine(views.TemplatesDir, &views.TemplatesSet),
+		Texts:  sessions,
 	}
 
 	services.Views.(*templates.Engine).Parse()
@@ -73,4 +79,5 @@ func main() {
 
 	go autonomous.HandleIntercept(hub.Stop)
 	hub.WaitStop()
+	killSessions <- struct{}{}
 }
