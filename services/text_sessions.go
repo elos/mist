@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/elos/data"
 	"github.com/elos/echo"
 	"github.com/elos/elos/command"
+	"github.com/elos/models"
 	"github.com/mitchellh/cli"
 )
 
@@ -74,12 +76,67 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 				// Tokenize the message
 				c.Args = strings.Split(text, " ")
 
-				ui, out := echo.NewTextUI(input, "TODO")
+				ui, out := echo.NewTextUI(input)
 				go func() {
 					for s := range out {
 						twilio.Send(from, s)
 					}
 				}()
+				var p *models.Person
+				var userID string
+				match := false
+
+				q := db.NewQuery(models.PersonKind)
+				q.Select(data.AttrMap{
+					"phone": from,
+				})
+				iter, err := q.Execute()
+				if err != nil {
+					log.Print(err)
+					goto Bail
+				}
+
+				p = models.NewPerson()
+
+				for iter.Next(p) {
+					match = true
+				}
+
+				if err := iter.Close(); err != nil {
+					log.Print(err)
+					goto Bail
+				}
+
+				if !match {
+					ui.Output("Looks like you are new to elos")
+					ui.Output("Welcome!")
+					ui.Output("Let's get you an account")
+
+					u := models.NewUser()
+					u.SetID(db.NewID())
+					u.CreatedAt = time.Now()
+					u.UpdatedAt = time.Now()
+					if err := db.Save(u); err != nil {
+						log.Print(err)
+						goto Bail
+					}
+
+					p.SetID(db.NewID())
+					p.CreatedAt = time.Now()
+					p.UpdatedAt = time.Now()
+					p.Phone = from
+					p.OwnerId = u.Id
+
+					if err = db.Save(u); err != nil {
+						log.Print(err)
+						goto Bail
+					}
+
+					ui.Output(fmt.Sprintf("You're ID is: %s", u.ID()))
+					userID = u.ID().String()
+				} else {
+					userID = p.OwnerId
+				}
 
 				// Initialize the commands
 				c.Commands = map[string]cli.CommandFactory{
@@ -87,7 +144,8 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 						return &command.NoteCommand{
 							Ui: ui,
 							Config: &command.Config{
-								DB: "localhost",
+								DB:     "localhost",
+								UserID: userID,
 							},
 							DB: db,
 						}, nil
@@ -96,10 +154,15 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 
 				// now we block on run, so someone else can pop from input,
 				// namely the UI
-				_, err := c.Run()
+				_, err = c.Run()
 				if err != nil {
 					log.Print(err.Error())
 				}
+				break
+
+			Bail:
+				bail <- from
+				break Run
 			case <-time.After(5 * time.Minute):
 				twilio.Send(from, "Session time out")
 				bail <- from
