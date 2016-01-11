@@ -127,7 +127,7 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 					p.Phone = from
 					p.OwnerId = u.Id
 
-					if err = db.Save(u); err != nil {
+					if err = db.Save(p); err != nil {
 						log.Print(err)
 						goto Bail
 					}
