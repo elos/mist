@@ -80,20 +80,25 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 				go func() {
 				loop:
 					for {
-						debounce := make([]string, 0)
+						queued := make([]string, 0)
 						select {
 						case s, ok := <-out:
-							if !ok {
+							if !ok { // out is closed
 								break loop
 							}
-							debounce = append(debounce, s)
+							log.Print(s)
+							queued = append(queued, s)
 						case <-time.After(1 * time.Second):
+							if len(queued) == 0 {
+								break
+							}
+
 							appended := ""
-							for _, s := range debounce {
+							for _, s := range queued {
 								appended += s + "\n"
 							}
 							twilio.Send(from, appended)
-							debounce = make([]string, 0)
+							queued = make([]string, 0)
 						}
 					}
 				}()
