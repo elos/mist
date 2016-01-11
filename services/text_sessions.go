@@ -78,29 +78,8 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 
 				ui, out := echo.NewTextUI(input)
 				go func() {
-				loop:
-					for {
-						queued := make([]string, 0)
-						select {
-						case s, ok := <-out:
-							if !ok { // out is closed
-								break loop
-							}
-							log.Print(s)
-							queued = append(queued, s)
-						case <-time.After(1 * time.Second):
-							log.Print("SENDING THEM")
-							if len(queued) == 0 {
-								break
-							}
-
-							appended := ""
-							for _, s := range queued {
-								appended += s + "\n"
-							}
-							twilio.Send(from, appended)
-							queued = make([]string, 0)
-						}
+					for s := range out {
+						twilio.Send(from, s)
 					}
 				}()
 				var p *models.Person
@@ -164,6 +143,16 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 					"note": func() (cli.Command, error) {
 						return &command.NoteCommand{
 							Ui: ui,
+							Config: &command.Config{
+								DB:     "localhost",
+								UserID: userID,
+							},
+							DB: db,
+						}, nil
+					},
+					"todo": func() (cli.Command, error) {
+						return &command.TodoCommand{
+							UI: ui,
 							Config: &command.Config{
 								DB:     "localhost",
 								UserID: userID,
