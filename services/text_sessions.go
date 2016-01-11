@@ -89,6 +89,7 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 							log.Print(s)
 							queued = append(queued, s)
 						case <-time.After(1 * time.Second):
+							log.Print("SENDING THEM")
 							if len(queued) == 0 {
 								break
 							}
