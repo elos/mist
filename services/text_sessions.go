@@ -78,8 +78,23 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 
 				ui, out := echo.NewTextUI(input)
 				go func() {
-					for s := range out {
-						twilio.Send(from, s)
+				loop:
+					for {
+						debounce := make([]string, 0)
+						select {
+						case s, ok := <-out:
+							if !ok {
+								break loop
+							}
+							debounce = append(debounce, s)
+						case <-time.After(1 * time.Second):
+							appended := ""
+							for _, s := range debounce {
+								appended += s + "\n"
+							}
+							twilio.Send(from, appended)
+							debounce = make([]string, 0)
+						}
 					}
 				}()
 				var p *models.Person
