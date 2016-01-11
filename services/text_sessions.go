@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/elos/data"
 	"github.com/elos/echo"
 	"github.com/elos/elos/command"
 	"github.com/mitchellh/cli"
@@ -28,7 +29,7 @@ func (ts *TextSessions) Input() chan<- *echo.Message {
 	return ts.input
 }
 
-func (ts *TextSessions) Run(twilio Twilio) chan<- struct{} {
+func (ts *TextSessions) Run(db data.DB, twilio Twilio) chan<- struct{} {
 	done := make(chan struct{})
 	bails := make(chan string)
 
@@ -39,7 +40,7 @@ func (ts *TextSessions) Run(twilio Twilio) chan<- struct{} {
 			case e := <-ts.input:
 				_, ok := ts.sessions[e.From]
 				if !ok {
-					ts.sessions[e.From] = session(e.From, bails, twilio)
+					ts.sessions[e.From] = session(e.From, bails, db, twilio)
 				}
 				// to prevent deadlock between a session that we are
 				// trying to send to bailing
@@ -59,7 +60,7 @@ func (ts *TextSessions) Run(twilio Twilio) chan<- struct{} {
 	return done
 }
 
-func session(from string, bail chan<- string, twilio Twilio) chan<- string {
+func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- string {
 	input := make(chan string)
 
 	go func() {
@@ -88,6 +89,7 @@ func session(from string, bail chan<- string, twilio Twilio) chan<- string {
 							Config: &command.Config{
 								DB: "localhost",
 							},
+							DB: db,
 						}, nil
 					},
 				}

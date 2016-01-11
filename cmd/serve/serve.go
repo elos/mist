@@ -56,7 +56,7 @@ func main() {
 	twilio := &TwilioService{client: c}
 
 	sessions := services.NewTexts(twilio)
-	killSessions := sessions.Run(twilio)
+	killSessions := sessions.Run(db, twilio)
 
 	// Setup Services
 	services := &mist.Services{
