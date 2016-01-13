@@ -86,7 +86,7 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 				var userID string
 				match := false
 
-				q := db.NewQuery(models.PersonKind)
+				q := db.Query(models.PersonKind)
 				q.Select(data.AttrMap{
 					"phone": from,
 				})
