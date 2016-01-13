@@ -152,12 +152,9 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 					},
 					"todo": func() (cli.Command, error) {
 						return &command.TodoCommand{
-							UI: ui,
-							Config: &command.Config{
-								DB:     "localhost",
-								UserID: userID,
-							},
-							DB: db,
+							UI:     ui,
+							UserID: userID,
+							DB:     db,
 						}, nil
 					},
 				}
