@@ -121,6 +121,19 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 						goto Bail
 					}
 
+					c := models.NewCredential()
+					c.CreatedAt = time.Now()
+					c.SetID(db.NewID())
+					c.SetOwner(u)
+					c.Public = "public"
+					c.Private = "private"
+					c.UpdatedAt = time.Now()
+
+					if err := db.Save(c); err != nil {
+						log.Print(err)
+						goto Bail
+					}
+
 					p.SetID(db.NewID())
 					p.CreatedAt = time.Now()
 					p.UpdatedAt = time.Now()
