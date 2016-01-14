@@ -8,6 +8,7 @@ import (
 	emiddleware "github.com/elos/ehttp/middleware"
 	"github.com/elos/ehttp/serve"
 	"github.com/elos/ehttp/templates"
+	"github.com/elos/gaia"
 	"github.com/elos/mist"
 	mistmiddleware "github.com/elos/mist/middleware"
 	"github.com/elos/mist/services"
@@ -76,6 +77,18 @@ func main() {
 
 	server := serve.New(serveOptions)
 	hub.StartAgent(server)
+
+	gaia := gaia.New(new(gaia.Middleware), &gaia.Services{
+		DB: db,
+	})
+
+	gaiaServeOptions := &serve.Opts{
+		Port:    8080,
+		Handler: gaia,
+	}
+
+	gaiaServer := serve.New(gaiaServeOptions)
+	hub.StartAgent(gaiaServer)
 
 	go autonomous.HandleIntercept(hub.Stop)
 	hub.WaitStop()
