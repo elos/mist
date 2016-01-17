@@ -82,7 +82,7 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 						twilio.Send(from, s)
 					}
 				}()
-				var p *models.Person
+				var p *models.Profile
 				var userID string
 				match := false
 
