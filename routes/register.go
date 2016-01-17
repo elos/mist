@@ -24,7 +24,7 @@ func RegisterPOST(c *serve.Conn, db services.DB) {
 		return
 	}
 
-	p := models.NewPerson()
+	p := models.NewProfile()
 	p.SetID(db.NewID())
 	p.SetOwner(u)
 
