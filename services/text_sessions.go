@@ -86,7 +86,7 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 				var userID string
 				match := false
 
-				q := db.Query(models.PersonKind)
+				q := db.Query(models.ProfileKind)
 				q.Select(data.AttrMap{
 					"phone": from,
 				})
@@ -96,7 +96,7 @@ func session(from string, bail chan<- string, db data.DB, twilio Twilio) chan<- 
 					goto Bail
 				}
 
-				p = models.NewPerson()
+				p = models.NewProfile()
 
 				for iter.Next(p) {
 					match = true
