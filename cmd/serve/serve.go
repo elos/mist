@@ -3,18 +3,21 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 
 	"github.com/elos/autonomous"
 	emiddleware "github.com/elos/ehttp/middleware"
 	"github.com/elos/ehttp/serve"
 	"github.com/elos/ehttp/templates"
 	"github.com/elos/gaia"
+	gservices "github.com/elos/gaia/services"
 	"github.com/elos/mist"
 	mistmiddleware "github.com/elos/mist/middleware"
 	"github.com/elos/mist/services"
 	"github.com/elos/mist/views"
 	"github.com/elos/models"
 	"github.com/subosito/twilio"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -78,12 +81,16 @@ func main() {
 	server := serve.New(serveOptions)
 	hub.StartAgent(server)
 
+	mux := gservices.NewSMSMux()
+	go mux.Start(context.TODO(), db, gservices.SMSFromTwilio(c, From))
 	gaia := gaia.New(new(gaia.Middleware), &gaia.Services{
-		DB: db,
+		SMSCommandSessions: mux,
+		DB:                 db,
+		Logger:             gservices.NewLogger(os.Stderr),
 	})
 
 	gaiaServeOptions := &serve.Opts{
-		Port:    8080,
+		Port:    8888,
 		Handler: gaia,
 	}
 
