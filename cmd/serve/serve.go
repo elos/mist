@@ -83,11 +83,15 @@ func main() {
 
 	mux := gservices.NewSMSMux()
 	go mux.Start(context.TODO(), db, gservices.SMSFromTwilio(c, From))
-	gaia := gaia.New(new(gaia.Middleware), &gaia.Services{
-		SMSCommandSessions: mux,
-		DB:                 db,
-		Logger:             gservices.NewLogger(os.Stderr),
-	})
+	gaia := gaia.New(
+		context.Background(),
+		new(gaia.Middleware),
+		&gaia.Services{
+			SMSCommandSessions: mux,
+			DB:                 db,
+			Logger:             gservices.NewLogger(os.Stderr),
+		},
+	)
 
 	gaiaServeOptions := &serve.Opts{
 		Port:    9999,
