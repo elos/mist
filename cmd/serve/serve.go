@@ -90,7 +90,7 @@ func main() {
 	})
 
 	gaiaServeOptions := &serve.Opts{
-		Port:    8080,
+		Port:    9999,
 		Handler: gaia,
 	}
 
