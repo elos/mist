@@ -45,6 +45,7 @@ func main() {
 	go hub.Start()
 	hub.WaitStart()
 
+	log.Printf("Attaching to mongo: %s", *mongo)
 	db, err := models.MongoDB(*mongo)
 	if err != nil {
 		log.Fatal(err)
