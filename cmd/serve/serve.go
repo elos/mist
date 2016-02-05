@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/elos/autonomous"
@@ -94,13 +95,17 @@ func main() {
 		},
 	)
 
-	gaiaServeOptions := &serve.Opts{
-		Port:    8080,
-		Handler: gaia,
-	}
+	http.ListenAndServeTLS(":8080", "/etc/ssl/cert.pem", "/etc/ssl/key.pem", http.HandlerFunc(gaia.ServeHTTP))
 
-	gaiaServer := serve.New(gaiaServeOptions)
-	hub.StartAgent(gaiaServer)
+	/*
+		gaiaServeOptions := &serve.Opts{
+			Port:    8080,
+			Handler: gaia,
+		}
+
+		gaiaServer := serve.New(gaiaServeOptions)
+		hub.StartAgent(gaiaServer)
+	*/
 
 	go autonomous.HandleIntercept(hub.Stop)
 	hub.WaitStop()
