@@ -6,4 +6,6 @@ const (
 	Register = "/register"
 
 	Test = "/test"
+
+	Ws = "/ws"
 )

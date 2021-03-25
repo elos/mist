@@ -119,5 +119,49 @@ func router(m *Middleware, s *Services) serve.Router {
 
 	})
 
+	router.GET(routes.Ws, func(c *serve.Conn) {
+
+		if ok := m.Log.Inbound(c); !ok {
+			return
+		}
+
+		if ok := m.Cors.Inbound(c); !ok {
+			return
+		}
+
+		routes.WsGET(c, s.DB)
+
+		if ok := m.Cors.Outbound(c); !ok {
+			return
+		}
+
+		if ok := m.Log.Outbound(c); !ok {
+			return
+		}
+
+	})
+
+	router.OPTIONS(routes.Ws, func(c *serve.Conn) {
+
+		if ok := m.Log.Inbound(c); !ok {
+			return
+		}
+
+		if ok := m.Cors.Inbound(c); !ok {
+			return
+		}
+
+		routes.WsOPTIONS(c)
+
+		if ok := m.Cors.Outbound(c); !ok {
+			return
+		}
+
+		if ok := m.Log.Outbound(c); !ok {
+			return
+		}
+
+	})
+
 	return router
 }

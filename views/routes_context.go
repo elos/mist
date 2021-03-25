@@ -21,6 +21,10 @@ func (r *RoutesContext) Test() string {
 	return fmt.Sprintf("/test")
 }
 
+func (r *RoutesContext) Ws() string {
+	return fmt.Sprintf("/ws")
+}
+
 var routesContext = &RoutesContext{}
 
 type context struct {

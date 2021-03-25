@@ -49,6 +49,19 @@
                  "POST": [ "db", "twilio", "texts" ],
                  "OPTIONS": []
              }
+         },
+         {
+             "name": "ws",
+             "path": "/ws",
+             "actions": [ "GET", "OPTIONS" ],
+             "middleware": {
+                 "GET": [ "log", "cors" ],
+                 "OPTIONS": [ "log", "cors"]
+             },
+             "services": {
+                 "GET": [ "db" ],
+                 "OPTIONS": []
+             }
          }
      ]
 }
